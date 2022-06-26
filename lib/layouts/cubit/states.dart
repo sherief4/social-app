@@ -120,20 +120,42 @@ class AddCommentErrorState extends AppStates {
   AddCommentErrorState({required this.error});
 }
 
-class GetCommentsLoadingState extends AppStates{}
 
-class GetCommentsSuccessState extends AppStates{
-  GetCommentsSuccessState({required this.postId , required this.index});
+
+
+
+class GetCommentModelsLoadingState extends AppStates{}
+
+class GetCommentModelsSuccessState extends AppStates{
+  GetCommentModelsSuccessState({required this.postId , required this.index});
   final String postId;
   final int index;
 }
 
-class GetCommentsErrorState extends AppStates{
-  GetCommentsErrorState({required this.error});
+class GetCommentModelsErrorState extends AppStates{
+  GetCommentModelsErrorState({required this.error});
   final String error;
 }
-class GetCommentProfilePicSuccessState extends AppStates{
-  GetCommentProfilePicSuccessState({required this.index , required this.postId});
+class GetCommentProfilePicsLoadingState extends AppStates{}
+
+class GetCommentProfilePicsSuccessState extends AppStates{
+  GetCommentProfilePicsSuccessState({required this.index , required this.postId});
   final String postId;
   final int index;
+}
+class GetPicLoadingState extends AppStates{}
+class GetPicSuccessState extends AppStates{}
+class GetPicErrorState extends AppStates{
+  GetPicErrorState({required this.error});
+  final String error;
+}
+
+class GetPostCommentsDataLoadingState extends AppStates{}
+class GetPostCommentsDataSuccessState extends AppStates{
+  GetPostCommentsDataSuccessState({required this.index});
+  final int index;
+}
+class GetPostCommentsDataErrorState extends AppStates{
+  GetPostCommentsDataErrorState({required this.error});
+  final String error;
 }
