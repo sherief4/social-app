@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,11 +9,11 @@ import 'package:social_app/layouts/cubit/states.dart';
 import 'package:social_app/models/comment_model.dart';
 import 'package:social_app/models/post_model.dart';
 import 'package:social_app/models/user_model.dart';
+import 'package:social_app/modules/chats/chats_screen.dart';
+import 'package:social_app/modules/feeds/feeds_screen.dart';
 import 'package:social_app/modules/new_post/new_post_screen.dart';
-import '../../modules/chats/chats_screen.dart';
-import '../../modules/feeds/feeds_screen.dart';
-import '../../modules/settings/settings_screen.dart';
-import '../../modules/users/users_screen.dart';
+import 'package:social_app/modules/settings/settings_screen.dart';
+import 'package:social_app/modules/users/users_screen.dart';
 
 class AppCubit extends Cubit<AppStates> {
   AppCubit() : super(AppInitialState());
@@ -307,47 +306,68 @@ class AppCubit extends Cubit<AppStates> {
         .doc()
         .set(_commentModel.toMap())
         .then((value) {
-      comments.clear();
-      getPostComments(postId, index);
+      //TODO: After adding a new comment refresh comments to get all comments
+      // commentModels.clear();
+      // commentsProfilePics.clear();
       emit(AddCommentSuccessState());
     }).catchError((error) {
       emit(AddCommentErrorState(error: error.toString()));
     });
   }
 
-  List<CommentModel> comments = [];
+  List<CommentModel> commentModels = [];
   List<String> commentsProfilePics = [];
 
-  void getPostComments(String postId, int index) {
-    emit(GetCommentsLoadingState());
-    _fireStore
+  Future<void> getPostCommentModels(String postId, int index)async {
+    emit(GetCommentModelsLoadingState());
+  await  _fireStore
         .collection('posts')
         .doc(postId)
         .collection('comments')
         .get()
         .then((value) {
       for (var element in value.docs) {
-        comments.add(CommentModel.fromJson(element.data()));
-        emit(GetCommentsSuccessState(postId: postId, index: index));
+        commentModels.add(CommentModel.fromJson(element.data()));
+        emit(GetCommentModelsSuccessState(postId: postId, index: index));
       }
     }).catchError((error) {
-      emit(GetCommentsErrorState(error: error.toString()));
+      emit(GetCommentModelsErrorState(error: error.toString()));
     });
   }
 
-  void getCommentsProfilePics({required String postId , required int index}) {
-    for (var element in comments) {
-      commentsProfilePics.add(getProfilePic(element.profileId));
+  Future<void> getCommentsProfilePics({required String postId, required int index})async {
+   emit(GetCommentProfilePicsLoadingState());
+    for (var element in commentModels) {
+      await getProfilePic(element.profileId).then((value) {
+        commentsProfilePics.add(value);
+        emit(GetCommentProfilePicsSuccessState(index: index, postId: postId));
+      });
+
     }
-    emit(GetCommentProfilePicSuccessState(index: index ,postId: postId ));
+
   }
 
-  String getProfilePic(String? uId) {
+  Future<String> getProfilePic(String? uId) async {
+    emit(GetPicLoadingState());
     String picUrl = '';
-    _fireStore.collection('users').doc(uId).get().then((value) {
+   await _fireStore.collection('users').doc(uId).get().then((value) {
       picUrl = value.data()!['image'];
+      emit(GetPicSuccessState());
+    }).catchError((error) {
+      emit(GetPicErrorState(error: error.toString()));
     });
-    print(picUrl);
+
     return picUrl;
+  }
+
+  Future<void> getPostCommentsData({required String postId ,required int index})async{
+    emit(GetPostCommentsDataLoadingState());
+    getPostCommentModels(postId, index).then((value){
+      getCommentsProfilePics(postId: postId, index: index).then((value) {
+        emit(GetPostCommentsDataSuccessState(index: index));
+      }).catchError((error){
+       emit( GetPostCommentsDataErrorState(error: error.toString()));
+      });
+    });
   }
 }
