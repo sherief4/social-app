@@ -5,6 +5,6 @@ class ChatsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text("ChatsScreen");
+    return const Text("ChatsScreen");
   }
 }
