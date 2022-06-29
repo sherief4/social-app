@@ -5,6 +5,7 @@ import 'package:social_app/layouts/cubit/states.dart';
 import 'package:social_app/modules/new_post/new_post_screen.dart';
 import 'package:social_app/shared/constants.dart';
 import 'package:social_app/shared/icon_broken.dart';
+
 import 'cubit/cubit.dart';
 
 class AppLayout extends StatelessWidget {
@@ -50,69 +51,69 @@ class AppLayout extends StatelessWidget {
           ),
           body: state is AppGetUserLoadingState
               ? Center(
-            child: CircularProgressIndicator(
-              color: secondColor,
-            ),
-          )
-              : SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              children: [
-                if (!FirebaseAuth.instance.currentUser!.emailVerified)
-                  Container(
-                    color: Colors.amber.withOpacity(0.6),
-                    height: 50.0,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.info_outline,
-                          ),
-                          const SizedBox(
-                            width: 15.0,
-                          ),
-                          Expanded(
-                            child: Text(
-                              "Please verify your email",
-                              style: TextStyle(
-                                color: mainColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              FirebaseAuth.instance.currentUser!
-                                  .sendEmailVerification()
-                                  .then((value) {
-                                showToast(
-                                  "Check your mail for verification",
-                                  ToastState.success,
-                                );
-                              }).catchError((error) {
-                                showToast(
-                                    error.toString(), ToastState.error);
-                              });
-                            },
-                            child: Text(
-                              "Send",
-                              style: TextStyle(
-                                color: secondColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  child: CircularProgressIndicator(
+                    color: secondColor,
                   ),
-                cubit.screens[cubit.curIn],
-              ],
-            ),
-          ),
+                )
+              : SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    children: [
+                      if (!FirebaseAuth.instance.currentUser!.emailVerified)
+                        Container(
+                          color: Colors.amber.withOpacity(0.6),
+                          height: 50.0,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.info_outline,
+                                ),
+                                const SizedBox(
+                                  width: 15.0,
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    "Please verify your email",
+                                    style: TextStyle(
+                                      color: mainColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    FirebaseAuth.instance.currentUser!
+                                        .sendEmailVerification()
+                                        .then((value) {
+                                      showToast(
+                                        "Check your mail for verification",
+                                        ToastState.success,
+                                      );
+                                    }).catchError((error) {
+                                      showToast(
+                                          error.toString(), ToastState.error);
+                                    });
+                                  },
+                                  child: Text(
+                                    "Send",
+                                    style: TextStyle(
+                                      color: secondColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      cubit.screens[cubit.curIn],
+                    ],
+                  ),
+                ),
           bottomNavigationBar: BottomNavigationBar(
             onTap: (index) {
               cubit.changeBottomNavigation(index);

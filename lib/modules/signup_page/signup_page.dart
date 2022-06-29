@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/layouts/app_layout.dart';
 import 'package:social_app/layouts/cubit/cubit.dart';
+
 import 'package:social_app/modules/signup_page/cubit/cubit.dart';
 import 'package:social_app/modules/signup_page/cubit/states.dart';
-import 'package:social_app/network/cache_helper.dart';
 import 'package:social_app/shared/constants.dart';
 import 'package:social_app/shared/custom_text_form_field.dart';
 
+import '../../network/cache_helper.dart';
 
 class SignUpPage extends StatelessWidget {
   SignUpPage({Key? key}) : super(key: key);
@@ -34,7 +35,7 @@ class SignUpPage extends StatelessWidget {
             value: state.uId,
           ).then((value) {
             AppCubit.get(context).getUserData().then((value) {
-              navigateAndFinish(context, const AppLayout());
+              navigateAndFinish(context, AppLayout());
             });
           });
         }
@@ -83,9 +84,7 @@ class SignUpPage extends StatelessWidget {
                         obscure: false,
                         validate: (String? value) {
                           if (value!.isEmpty) {
-                            return "Username can't be empty";
-                          }else{
-                            return null ;
+                            return "Username can\'t be empty";
                           }
                         },
                         prefix: Icons.person,
@@ -99,9 +98,7 @@ class SignUpPage extends StatelessWidget {
                         obscure: false,
                         validate: (String? value) {
                           if (value!.isEmpty) {
-                            return "Email can't be empty";
-                          }else{
-                            return null ;
+                            return "Email can\'t be empty";
                           }
                         },
                         prefix: Icons.mail,
@@ -115,9 +112,7 @@ class SignUpPage extends StatelessWidget {
                         obscure: cubit.isPassword,
                         validate: (String? value) {
                           if (value!.isEmpty) {
-                            return "Password can't be empty";
-                          }else{
-                            return null ;
+                            return "Password can\'t be empty";
                           }
                         },
                         prefix: Icons.lock,
@@ -137,9 +132,7 @@ class SignUpPage extends StatelessWidget {
                         obscure: false,
                         validate: (String? value) {
                           if (value!.isEmpty) {
-                            return "phone can't be empty";
-                          }else{
-                            return null ;
+                            return "phone can\'t be empty";
                           }
                         },
                         prefix: Icons.phone,
