@@ -17,155 +17,148 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<LoginCubit, LoginPageStates>(
-      listener: (context, state) {
-        if (state is LoginErrorState) {
-          showToast(
-            state.error,
-            ToastState.error,
-          );
-        }
-        if (state is LoginSuccessState) {
-          CacheHelper.putData(
-            key: 'uId',
-            value: state.uId,
-          ).then((value) {
-            AppCubit.get(context).getUserData().then((value) {
-              navigateAndFinish(context, const AppLayout());
+    return  BlocConsumer<LoginCubit, LoginPageStates>(
+        listener: (context, state) {
+          if (state is LoginErrorState) {
+            showToast(
+              state.error,
+              ToastState.error,
+            );
+          }
+          if (state is LoginSuccessState) {
+
+            CacheHelper.putData(key: 'uId', value: state.uId,).then((value){
+           AppCubit.get(context).getUserData().then((value) {
+             navigateAndFinish(context, AppLayout());
+           });
             });
-          });
-        }
-      },
-      builder: (context, state) {
-        var cubit = LoginCubit.get(context);
-        return Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
+          }
+        },
+        builder: (context, state) {
+          var cubit = LoginCubit.get(context);
+          return Scaffold(
             backgroundColor: Colors.white,
-            elevation: 0.0,
-          ),
-          body: Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Login",
-                        style: TextStyle(
-                          color: mainColor,
-                          fontSize: 35.0,
-                          fontWeight: FontWeight.bold,
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0.0,
+            ),
+            body: Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Login",
+                          style: TextStyle(
+                            color: mainColor,
+                            fontSize: 35.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 8.0,
-                      ),
-                      const Text(
-                        "Login to join our social network",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 20.0,
+                        const SizedBox(
+                          height: 8.0,
                         ),
-                      ),
-                      const SizedBox(
-                        height: 32.0,
-                      ),
-                      CustomTextFormField(
-                          controller: mailController,
-                          obscure: false,
+                        const Text(
+                          "Login to join our social network",
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 20.0,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 32.0,
+                        ),
+                        CustomTextFormField(
+                            controller: mailController,
+                            obscure: false,
+                            validate: (String? value) {
+                              if (value!.isEmpty) {
+                                return "Email can\'t be empty";
+                              }
+                            },
+                            prefix: Icons.mail,
+                            label: "Email"),
+                        const SizedBox(
+                          height: 16.0,
+                        ),
+                        CustomTextFormField(
+                          controller: passwordController,
+                          obscure: cubit.isPassword,
                           validate: (String? value) {
                             if (value!.isEmpty) {
-                              return "Email can't be empty";
-                            } else {
-                              return null;
+                              return "Password can\'t be empty";
                             }
                           },
-                          prefix: Icons.mail,
-                          label: "Email"),
-                      const SizedBox(
-                        height: 16.0,
-                      ),
-                      CustomTextFormField(
-                        controller: passwordController,
-                        obscure: cubit.isPassword,
-                        validate: (String? value) {
-                          if (value!.isEmpty) {
-                            return "Password can't be empty";
-                          } else {
-                            return null;
-                          }
-                        },
-                        prefix: Icons.lock,
-                        label: "Password",
-                        suffix: cubit.isPassword
-                            ? Icons.remove_red_eye
-                            : Icons.visibility_off_rounded,
-                        suffixPressed: () {
-                          cubit.changePasswordVisibility();
-                        },
-                      ),
-                      const SizedBox(
-                        height: 16.0,
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48.0,
-                        child: MaterialButton(
-                          onPressed: () {
-                            cubit.userLogin(
-                                email: mailController.text,
-                                password: passwordController.text);
+                          prefix: Icons.lock,
+                          label: "Password",
+                          suffix: cubit.isPassword
+                              ? Icons.remove_red_eye
+                              : Icons.visibility_off_rounded,
+                          suffixPressed: () {
+                            cubit.changePasswordVisibility();
                           },
-                          color: mainColor,
-                          child: state is LoginLoadingState
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                              : const Text(
-                                  "Log in",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 2.0,
-                                    fontSize: 20.0,
-                                  ),
-                                ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 8.0,
-                      ),
-                      Row(
-                        children: [
-                          const Text("Need an account? "),
-                          TextButton(
+                        const SizedBox(
+                          height: 16.0,
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48.0,
+                          child: MaterialButton(
                             onPressed: () {
-                              navigateTo(
-                                context,
-                                SignUpPage(),
-                              );
+                              cubit.userLogin(email: mailController.text, password: passwordController.text);
                             },
-                            child: const Text(
-                              "Sign up",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                            color: mainColor,
+                            child: state is LoginLoadingState
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : const Text(
+                                    "Log in",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 2.0,
+                                      fontSize: 20.0,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 8.0,
+                        ),
+                        Row(
+                          children: [
+                            const Text("Need an account? "),
+                            TextButton(
+                              onPressed: () {
+                                navigateTo(
+                                  context,
+                                  SignUpPage(),
+                                );
+                              },
+                              child: const Text(
+                                "Sign up",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+
     );
   }
 }

@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:social_app/models/user_model.dart';
+
 import 'package:social_app/modules/signup_page/cubit/states.dart';
 
+import '../../../models/user_model.dart';
 
 class SignupCubit extends Cubit<SignupPageStates> {
   SignupCubit() : super(SignupPageInitialState());
