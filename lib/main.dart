@@ -44,7 +44,9 @@ class MyApp extends StatelessWidget {
             create: (_) => LoginCubit(),
           ),
           BlocProvider(
-            create: (_) => AppCubit()..getUserData()..getPosts(),
+            create: (_) => AppCubit()
+              ..getUserData()
+              ..getPosts(),
           ),
           BlocProvider(
             create: (_) => SignupCubit(),
@@ -58,14 +60,14 @@ class MyApp extends StatelessWidget {
             scaffoldBackgroundColor: Colors.white,
             fontFamily: 'Jannah',
             primarySwatch: Colors.blueGrey,
-            bottomNavigationBarTheme:  BottomNavigationBarThemeData(
-                selectedIconTheme:  IconThemeData(
+            bottomNavigationBarTheme: BottomNavigationBarThemeData(
+                selectedIconTheme: IconThemeData(
                   color: secondColor,
                 ),
                 unselectedIconTheme: IconThemeData(
                   color: mainColor,
                 ),
-                selectedLabelStyle:  TextStyle(
+                selectedLabelStyle: TextStyle(
                   color: secondColor,
                   fontWeight: FontWeight.bold,
                 ),

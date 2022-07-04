@@ -21,81 +21,84 @@ class FeedsScreen extends StatelessWidget {
         if (state is AddCommentErrorState) {
           showToast(state.error, ToastState.error);
         }
-        if(state is GetPostCommentsDataSuccessState){
-          showAddCommentSheet(context: context, index: state.index, postId: AppCubit.get(context).postId[state.index]);
+        if (state is GetPostCommentsDataSuccessState) {
+          showAddCommentSheet(
+              context: context,
+              index: state.index,
+              postId: AppCubit.get(context).postId[state.index]);
         }
       },
       builder: (context, state) {
         if (state is AppGetPostsLoadingState) {
-          return Expanded(
-            child: Center(
-              child: CircularProgressIndicator(
-                color: mainColor,
-              ),
+          return Center(
+            child: CircularProgressIndicator(
+              color: mainColor,
             ),
           );
         } else {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              if (state is GetPostCommentsDataLoadingState)
-                LinearProgressIndicator(
-                  color: secondColor,
-                ),
-              Card(
-                clipBehavior: Clip.antiAliasWithSaveLayer,
-                elevation: 5.0,
-                margin: const EdgeInsets.all(8.0),
-                child: Stack(
-                  alignment: AlignmentDirectional.topEnd,
-                  children: const [
-                    Image(
-                      width: double.infinity,
-                      height: 200.0,
-                      fit: BoxFit.cover,
-                      image: NetworkImage(
-                        'https://img.freepik.com/free-photo/friendly-smiling-young-woman-with-brown-hair-gives-good-advice-suggestion-what-buy-indicates-with-fore-finger-upper-right-corner_273609-18601.jpg?w=740',
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        "Communicate with friends",
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
+          if(AppCubit.get(context).allPosts.isNotEmpty){
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                if (state is GetCommentModelsLoadingState)
+                  LinearProgressIndicator(
+                    color: secondColor,
+                  ),
+                Card(
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  elevation: 5.0,
+                  margin: const EdgeInsets.all(8.0),
+                  child: Stack(
+                    alignment: AlignmentDirectional.topEnd,
+                    children: const [
+                      Image(
+                        width: double.infinity,
+                        height: 200.0,
+                        fit: BoxFit.cover,
+                        image: NetworkImage(
+                          'https://img.freepik.com/free-photo/friendly-smiling-young-woman-with-brown-hair-gives-good-advice-suggestion-what-buy-indicates-with-fore-finger-upper-right-corner_273609-18601.jpg?w=740',
                         ),
                       ),
-                    )
-                  ],
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          "Communicate with friends",
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) => buildPostItem(
-                    context,
-                    AppCubit.get(context).allPosts[index],
-                    index,
-                    state
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) => buildPostItem(context,
+                      AppCubit.get(context).allPosts[index], index, state),
+                  separatorBuilder: (context, index) {
+                    return const SizedBox(
+                      width: double.infinity,
+                      height: 10.0,
+                    );
+                  },
+                  itemCount: AppCubit.get(context).allPosts.length,
                 ),
-                separatorBuilder: (context, index) {
-                  return const SizedBox(
-                    width: double.infinity,
-                    height: 10.0,
-                  );
-                },
-                itemCount: AppCubit.get(context).allPosts.length,
-              )
-            ],
-          );
+              ],
+            );
+          }else{
+            return const Center(child: Text('No posts to show!'),);
+          }
         }
       },
     );
   }
 
-  Widget buildPostItem(BuildContext context, PostModel model, int index, AppStates state ) =>
+  Widget buildPostItem(
+          BuildContext context, PostModel model, int index, AppStates state) =>
       Card(
         clipBehavior: Clip.antiAliasWithSaveLayer,
         elevation: 10.0,
@@ -239,9 +242,7 @@ class FeedsScreen extends StatelessWidget {
                   MaterialButton(
                     minWidth: 1.0,
                     padding: EdgeInsets.zero,
-                    onPressed: () {
-
-                    },
+                    onPressed: () {},
                     child: Row(
                       children: [
                         const Icon(
@@ -275,7 +276,9 @@ class FeedsScreen extends StatelessWidget {
                     minWidth: 1.0,
                     padding: EdgeInsets.zero,
                     onPressed: () {
-                      AppCubit.get(context).getPostCommentsData(postId: AppCubit.get(context).postId[index], index: index);
+                      AppCubit.get(context).getPostCommentsData(
+                          postId: AppCubit.get(context).postId[index],
+                          index: index);
                     },
                     child: const Text(
                       'Write a Comment',
@@ -322,165 +325,162 @@ class FeedsScreen extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       builder: (context) {
-
-          return Container(
-            height: MediaQuery.of(context).size.height - 25,
-            width: double.infinity,
-            decoration: const BoxDecoration(),
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: 8.0,
-                right: 8.0,
-                top: 8.0,
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () {},
-                        child: Row(
-                          children: [
-                            const Icon(
-                              IconBroken.Heart,
-                              color: Colors.red,
-                            ),
-                            const SizedBox(
-                              width: 4.0,
-                            ),
-                            Text(
-                              '${AppCubit.get(context).likes[index]}',
-                              style: TextStyle(
-                                color: mainColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20.0,
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 4.0,
-                            ),
-                            const Icon(
-                              IconBroken.Arrow___Right_2,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Spacer(),
-                      InkWell(
-                        onTap: () {
-                          AppCubit.get(context).likePost(
-                              postId: AppCubit.get(context).postId[index]);
-                        },
-                        child: const CircleAvatar(
-                          backgroundColor: Colors.white,
-                          radius: 20.0,
-                          child: Icon(
+        return Container(
+          height: MediaQuery.of(context).size.height - 25,
+          width: double.infinity,
+          decoration: const BoxDecoration(),
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 8.0,
+              right: 8.0,
+              top: 8.0,
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    InkWell(
+                      onTap: () {},
+                      child: Row(
+                        children: [
+                          const Icon(
                             IconBroken.Heart,
                             color: Colors.red,
                           ),
+                          const SizedBox(
+                            width: 4.0,
+                          ),
+                          Text(
+                            '${AppCubit.get(context).likes[index]}',
+                            style: TextStyle(
+                              color: mainColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20.0,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 4.0,
+                          ),
+                          const Icon(
+                            IconBroken.Arrow___Right_2,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                    InkWell(
+                      onTap: () {
+                        AppCubit.get(context).likePost(
+                            postId: AppCubit.get(context).postId[index]);
+                      },
+                      child: const CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 20.0,
+                        child: Icon(
+                          IconBroken.Heart,
+                          color: Colors.red,
                         ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 4.0,
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      return buildCommentCard(
+                        context: context,
+                        comment:
+                            '${AppCubit.get(context).commentModels[index].comment}',
+                        profilePic:
+                            AppCubit.get(context).commentsProfilePics[index],
+                      );
+                    },
+                    itemCount: AppCubit.get(context).commentModels.length,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          '${AppCubit.get(context).userModel!.image}',
+                        ),
+                        radius: 20.0,
+                      ),
+                      Container(
+                        height: 44,
+                        width: 284,
+                        decoration: BoxDecoration(
+                          color: secondColor,
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(
+                              20.0,
+                            ),
+                          ),
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 280.0,
+                            height: 40.0,
+                            padding: const EdgeInsets.only(
+                              right: 8.0,
+                              left: 8.0,
+                            ),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(
+                                  20.0,
+                                ),
+                              ),
+                            ),
+                            child: Center(
+                              child: TextFormField(
+                                controller: commentController,
+                                decoration: const InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 4.0,
+                                  ),
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      CircleAvatar(
+                        backgroundColor: Colors.white,
+                        child: IconButton(
+                          onPressed: () {
+                            AppCubit.get(context).addComment(
+                              postId: postId,
+                              comment: commentController.text,
+                              profileId: FirebaseAuth.instance.currentUser!.uid,
+                              index: index,
+                            );
+                          },
+                          icon: Icon(
+                            IconBroken.Send,
+                            color: secondColor,
+                          ),
+                        ),
+                        radius: 20.0,
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 4.0,
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemBuilder: (context, index) {
-                        return buildCommentCard(
-                          context: context,
-                          comment:
-                              '${AppCubit.get(context).commentModels[index].comment}',
-                          profilePic:
-                              AppCubit.get(context).commentsProfilePics[index],
-                        );
-                      },
-                      itemCount: AppCubit.get(context).commentModels.length,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8.0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CircleAvatar(
-                          backgroundImage: NetworkImage(
-                            '${AppCubit.get(context).userModel!.image}',
-                          ),
-                          radius: 20.0,
-                        ),
-                        Container(
-                          height: 44,
-                          width: 284,
-                          decoration: BoxDecoration(
-                            color: secondColor,
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(
-                                20.0,
-                              ),
-                            ),
-                          ),
-                          child: Center(
-                            child: Container(
-                              width: 280.0,
-                              height: 40.0,
-                              padding: const EdgeInsets.only(
-                                right: 8.0,
-                                left: 8.0,
-                              ),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(
-                                    20.0,
-                                  ),
-                                ),
-                              ),
-                              child: Center(
-                                child: TextFormField(
-                                  controller: commentController,
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
-                                      vertical: 4.0,
-                                    ),
-                                    border: InputBorder.none,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: IconButton(
-                            onPressed: () {
-                              AppCubit.get(context).addComment(
-                                postId: postId,
-                                comment: commentController.text,
-                                profileId:
-                                    FirebaseAuth.instance.currentUser!.uid,
-                                index: index,
-                              );
-                            },
-                            icon: Icon(
-                              IconBroken.Send,
-                              color: secondColor,
-                            ),
-                          ),
-                          radius: 20.0,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          );
-
+          ),
+        );
       },
     ).whenComplete(() {
       AppCubit.get(context).commentsProfilePics.clear();
