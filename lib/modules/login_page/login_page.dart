@@ -75,17 +75,19 @@ class LoginPage extends StatelessWidget {
                         CustomTextFormField(
                             controller: mailController,
                             obscure: false,
+                            keyboardType: TextInputType.emailAddress,
                             validate: (String? value) {
                               if (value!.isEmpty) {
                                 return "Email can\'t be empty";
                               }
                             },
                             prefix: Icons.mail,
-                            label: "Email"),
+                            label: "Email",),
                         const SizedBox(
                           height: 16.0,
                         ),
                         CustomTextFormField(
+                          keyboardType: TextInputType.visiblePassword,
                           controller: passwordController,
                           obscure: cubit.isPassword,
                           validate: (String? value) {

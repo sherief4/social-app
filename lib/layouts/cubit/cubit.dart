@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:social_app/layouts/cubit/states.dart';
 import 'package:social_app/models/comment_model.dart';
+import 'package:social_app/models/message_model.dart';
 import 'package:social_app/models/post_model.dart';
 import 'package:social_app/models/user_model.dart';
 import 'package:social_app/modules/chats/chats_screen.dart';
@@ -35,6 +36,9 @@ class AppCubit extends Cubit<AppStates> {
   ];
 
   void changeBottomNavigation(int index) {
+    if (index == 1) {
+      getAllUsers();
+    }
     if (index == 2) {
       emit(AddNewPostState());
     } else {
@@ -228,6 +232,8 @@ class AppCubit extends Cubit<AppStates> {
     );
     _fireStore.collection('posts').add(postModel.toMap()).then((value) {
       emit(CreatePostSuccessState());
+      allPosts.clear();
+      getPosts();
     }).catchError((error) {
       emit(CreatePostErrorState(error: error.toString()));
     });
@@ -318,9 +324,9 @@ class AppCubit extends Cubit<AppStates> {
   List<CommentModel> commentModels = [];
   List<String> commentsProfilePics = [];
 
-  Future<void> getPostCommentModels(String postId, int index)async {
+  Future<void> getPostCommentModels(String postId, int index) async {
     emit(GetCommentModelsLoadingState());
-  await  _fireStore
+    await _fireStore
         .collection('posts')
         .doc(postId)
         .collection('comments')
@@ -335,22 +341,21 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  Future<void> getCommentsProfilePics({required String postId, required int index})async {
-   emit(GetCommentProfilePicsLoadingState());
+  Future<void> getCommentsProfilePics(
+      {required String postId, required int index}) async {
+    emit(GetCommentProfilePicsLoadingState());
     for (var element in commentModels) {
       await getProfilePic(element.profileId).then((value) {
         commentsProfilePics.add(value);
         emit(GetCommentProfilePicsSuccessState(index: index, postId: postId));
       });
-
     }
-
   }
 
   Future<String> getProfilePic(String? uId) async {
     emit(GetPicLoadingState());
     String picUrl = '';
-   await _fireStore.collection('users').doc(uId).get().then((value) {
+    await _fireStore.collection('users').doc(uId).get().then((value) {
       picUrl = value.data()!['image'];
       emit(GetPicSuccessState());
     }).catchError((error) {
@@ -360,14 +365,101 @@ class AppCubit extends Cubit<AppStates> {
     return picUrl;
   }
 
-  Future<void> getPostCommentsData({required String postId ,required int index})async{
+  Future<void> getPostCommentsData(
+      {required String postId, required int index}) async {
     emit(GetPostCommentsDataLoadingState());
-    getPostCommentModels(postId, index).then((value){
+    getPostCommentModels(postId, index).then((value) {
       getCommentsProfilePics(postId: postId, index: index).then((value) {
         emit(GetPostCommentsDataSuccessState(index: index));
-      }).catchError((error){
-       emit( GetPostCommentsDataErrorState(error: error.toString()));
+      }).catchError((error) {
+        emit(GetPostCommentsDataErrorState(error: error.toString()));
       });
+    });
+  }
+
+//Chats
+
+//Get All Users
+  List<UserModel> allUsers = [];
+
+  void getAllUsers() async {
+    emit(GetAllUsersLoadingState());
+    if (allUsers.isEmpty) {
+      allUsers.clear();
+      await _fireStore.collection('users').get().then((value) {
+        for (var element in value.docs) {
+          if (element.data()['uId'] != FirebaseAuth.instance.currentUser!.uid) {
+            allUsers.add(UserModel.fromJson(element.data()));
+          }
+        }
+        emit(GetAllUsersSuccessState());
+      }).catchError((error) {
+        emit(GetAllUsersErrorState(error: error.toString()));
+      });
+    }
+  }
+
+//Send Message
+  void sendMessage({
+    required String message,
+    required String senderId,
+    required String? receiverId,
+  }) {
+    MessageModel messageModel = MessageModel(
+      message: message,
+      senderId: senderId,
+      receiverId: receiverId,
+      dateTime: DateTime.now().toString(),
+    );
+
+    //set my chats
+    _fireStore
+        .collection('users')
+        .doc(senderId)
+        .collection('chats')
+        .doc(receiverId)
+        .collection('messages')
+        .add(messageModel.toMap())
+        .then((value) {
+      emit(SendMessageSuccessState());
+    }).catchError((error) {
+      emit(SendMessagesErrorState(error: error.toString()));
+    });
+
+    //then set receiver chats
+
+    _fireStore
+        .collection('users')
+        .doc(receiverId)
+        .collection('chats')
+        .doc(senderId)
+        .collection('messages')
+        .add(messageModel.toMap())
+        .then((value) {
+      emit(SendMessageSuccessState());
+    }).catchError((error) {
+      emit(SendMessagesErrorState(error: error.toString()));
+    });
+  }
+//Get messages
+  List<MessageModel> messages = [];
+
+  void getMessages({required String receiverId}) {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(userModel!.uId)
+        .collection('chats')
+        .doc(receiverId)
+        .collection('messages')
+        .orderBy('dateTime')
+        .snapshots()
+        .listen((event) {
+      messages = [];
+      for (var element in event.docs) {
+        messages.add(MessageModel.fromJson(element.data()));
+        print(element.data());
+      }
+      emit(GetChatMessagesSuccessState());
     });
   }
 }

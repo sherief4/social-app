@@ -11,11 +11,13 @@ class CustomTextFormField extends StatelessWidget {
     required this.prefix,
     this.suffix,
     required this.label,
+    this.keyboardType = TextInputType.text,
     this.suffixPressed,
   }) : super(key: key);
   final TextEditingController controller;
   final bool obscure;
    void Function(String)? onSubmit;
+   TextInputType keyboardType;
   IconData? suffix;
   final IconData prefix;
   final String label;
@@ -31,7 +33,9 @@ class CustomTextFormField extends StatelessWidget {
         obscureText: obscure,
         onFieldSubmitted: onSubmit,
         validator: validate,
+        keyboardType: keyboardType,
         decoration: InputDecoration(
+
             border: const OutlineInputBorder(),
             prefixIcon: Icon(
               prefix,

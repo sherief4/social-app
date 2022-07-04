@@ -5,10 +5,11 @@ import 'package:social_app/layouts/cubit/cubit.dart';
 
 import 'package:social_app/modules/signup_page/cubit/cubit.dart';
 import 'package:social_app/modules/signup_page/cubit/states.dart';
+import 'package:social_app/network/cache_helper.dart';
 import 'package:social_app/shared/constants.dart';
 import 'package:social_app/shared/custom_text_form_field.dart';
 
-import '../../network/cache_helper.dart';
+
 
 class SignUpPage extends StatelessWidget {
   SignUpPage({Key? key}) : super(key: key);
@@ -103,6 +104,7 @@ class SignUpPage extends StatelessWidget {
                         },
                         prefix: Icons.mail,
                         label: "Email",
+                        keyboardType: TextInputType.emailAddress,
                       ),
                       const SizedBox(
                         height: 16.0,
@@ -137,6 +139,7 @@ class SignUpPage extends StatelessWidget {
                         },
                         prefix: Icons.phone,
                         label: "Phone Number",
+                        keyboardType: TextInputType.phone,
                       ),
                       const SizedBox(
                         height: 16.0,
