@@ -36,7 +36,7 @@ class FeedsScreen extends StatelessWidget {
             ),
           );
         } else {
-          if(AppCubit.get(context).allPosts.isNotEmpty){
+          if(AppCubit.get(context).postCommentsNumber.isNotEmpty){
             return Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -77,15 +77,20 @@ class FeedsScreen extends StatelessWidget {
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) => buildPostItem(context,
-                      AppCubit.get(context).allPosts[index], index, state),
+                  itemBuilder: (context, index) {
+                  while(AppCubit.get(context).postCommentsNumber.length > index){
+                    return  buildPostItem(context,
+                        AppCubit.get(context).postModels[index], index, state);
+                  }
+                  return  CircularProgressIndicator(color: mainColor,);
+                  },
                   separatorBuilder: (context, index) {
                     return const SizedBox(
                       width: double.infinity,
                       height: 10.0,
                     );
                   },
-                  itemCount: AppCubit.get(context).allPosts.length,
+                  itemCount: AppCubit.get(context).postModels.length,
                 ),
               ],
             );
@@ -232,7 +237,7 @@ class FeedsScreen extends StatelessWidget {
                           width: 5.0,
                         ),
                         Text(
-                          '${AppCubit.get(context).likes[index]}',
+                          '${AppCubit.get(context).postLikes[index]}',
                           style: const TextStyle(color: Colors.blueGrey),
                         ),
                       ],
@@ -253,7 +258,7 @@ class FeedsScreen extends StatelessWidget {
                           width: 5.0,
                         ),
                         Text(
-                          '${AppCubit.get(context).commentsNumber[index]}',
+                          '${AppCubit.get(context).postCommentsNumber[index]}',
                           style: const TextStyle(color: Colors.blueGrey),
                         ),
                       ],
@@ -352,7 +357,7 @@ class FeedsScreen extends StatelessWidget {
                             width: 4.0,
                           ),
                           Text(
-                            '${AppCubit.get(context).likes[index]}',
+                            '${AppCubit.get(context).postLikes[index]}',
                             style: TextStyle(
                               color: mainColor,
                               fontWeight: FontWeight.bold,

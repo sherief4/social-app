@@ -15,6 +15,8 @@ import 'package:social_app/modules/feeds/feeds_screen.dart';
 import 'package:social_app/modules/new_post/new_post_screen.dart';
 import 'package:social_app/modules/settings/settings_screen.dart';
 import 'package:social_app/modules/users/users_screen.dart';
+import 'package:social_app/network/cache_helper.dart';
+import 'package:social_app/shared/constants.dart';
 
 class AppCubit extends Cubit<AppStates> {
   AppCubit() : super(AppInitialState());
@@ -232,7 +234,7 @@ class AppCubit extends Cubit<AppStates> {
     );
     _fireStore.collection('posts').add(postModel.toMap()).then((value) {
       emit(CreatePostSuccessState());
-      allPosts.clear();
+
       getPosts();
     }).catchError((error) {
       emit(CreatePostErrorState(error: error.toString()));
@@ -249,30 +251,61 @@ class AppCubit extends Cubit<AppStates> {
   //Like Post
   //Add Comment
 
-  List<PostModel> allPosts = [];
   List<String> postId = [];
-  List<int> likes = [];
-  List<int> commentsNumber = [];
+  List<PostModel> postModels = [];
+  List<int> postLikes = [];
+  List<int> postCommentsNumber = [];
 
-  void getPosts() {
-    emit(AppGetPostsLoadingState());
-    _fireStore.collection('posts').get().then((value) {
+  Future<void> getPostModels() async {
+    emit(GetPostModelsLoadingState());
+    await _fireStore.collection('posts').get().then((value) {
+      for (var element in value.docs) {
+        postModels.add(PostModel.fromJson(element.data()));
+        postId.add(element.id);
+      }
+      emit(GetPostModelsSuccessState());
+    }).catchError((error) {
+      emit(GetPostModelsErrorState(error: error.toString()));
+    });
+  }
+
+  Future<void> getLikes() async {
+    emit(GetPostLikesLoadingState());
+    await _fireStore.collection('posts').get().then((value) {
       for (var element in value.docs) {
         element.reference.collection('likes').get().then((value) {
-          likes.add(value.docs.length);
-          postId.add(element.id);
-          allPosts.add(PostModel.fromJson(element.data()));
-          emit(AppGetPostsSuccessState());
-        }).catchError((error) {
-          emit(AppGetPostsErrorState(error: error.toString()));
+          postLikes.add(value.docs.length);
         });
       }
+      emit(GetPostModelsSuccessState());
+    }).catchError((error) {
+      emit(GetPostLikesErrorState(error: error.toString()));
+    });
+  }
+
+  Future<void> getCommentsNumbers() async {
+    emit(GetPostCommentsNumbersLoadingState());
+    await _fireStore.collection('posts').get().then((value) {
       for (var element in value.docs) {
         element.reference.collection('comments').get().then((value) {
-          commentsNumber.add(value.docs.length);
-          emit(AppGetPostsSuccessState());
+          postCommentsNumber.add(value.docs.length);
         });
       }
+      emit(GetPostCommentsNumbersSuccessState());
+    }).catchError((error) {
+      emit(GetPostCommentsNumbersErrorState(error: error.toString()));
+    });
+  }
+
+  Future<void> getPosts() async {
+    emit(AppGetPostsLoadingState());
+    await getPostModels().then((value) {
+      getLikes().then((value) {
+        getCommentsNumbers();
+
+      });
+    }).then((value) {
+      emit(AppGetPostsSuccessState());
     }).catchError((error) {
       emit(AppGetPostsErrorState(error: error.toString()));
     });
@@ -441,6 +474,7 @@ class AppCubit extends Cubit<AppStates> {
       emit(SendMessagesErrorState(error: error.toString()));
     });
   }
+
 //Get messages
   List<MessageModel> messages = [];
 
@@ -460,6 +494,19 @@ class AppCubit extends Cubit<AppStates> {
         print(element.data());
       }
       emit(GetChatMessagesSuccessState());
+    });
+  }
+
+  //Sign Out
+
+  Future<void> signOut() async {
+    emit(SignOutLoadingState());
+    await FirebaseAuth.instance.signOut().then((value) {
+      CacheHelper.removeData('uId').then((value) {
+        uId = null;
+        curIn = 0;
+        emit(SignOutSuccessState());
+      });
     });
   }
 }

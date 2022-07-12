@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/layouts/cubit/cubit.dart';
 import 'package:social_app/layouts/cubit/states.dart';
 import 'package:social_app/modules/edit_profile/edit_profile_page.dart';
+import 'package:social_app/modules/login_page/login_page.dart';
 import 'package:social_app/shared/constants.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -11,7 +12,11 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit, AppStates>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is SignOutSuccessState) {
+          navigateAndFinish(context, LoginPage());
+        }
+      },
       builder: (context, state) {
         var userModel = AppCubit.get(context).userModel;
         return Padding(
@@ -82,132 +87,58 @@ class SettingsScreen extends StatelessWidget {
                         fontSize: 12.0,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {},
-                              child: Column(
-                                children: [
-                                  Text(
-                                    '100',
-                                    style: TextStyle(
-                                      color: mainColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Posts',
-                                    style: TextStyle(
-                                      color: secondColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {},
-                              child: Column(
-                                children: [
-                                  Text(
-                                    '100',
-                                    style: TextStyle(
-                                      color: mainColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Photos',
-                                    style: TextStyle(
-                                      color: secondColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {},
-                              child: Column(
-                                children: [
-                                  Text(
-                                    '100',
-                                    style: TextStyle(
-                                      color: mainColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Followers',
-                                    style: TextStyle(
-                                      color: secondColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {},
-                              child: Column(
-                                children: [
-                                  Text(
-                                    '100',
-                                    style: TextStyle(
-                                      color: mainColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Following',
-                                    style: TextStyle(
-                                      color: secondColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    const SizedBox(
+                      height: 8.0,
                     ),
                     Row(
                       children: [
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () {},
-                            child: const Text('Add Photos'),
+                            onPressed: () {
+                              navigateTo(context, const EditProfilePage());
+                            },
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(
+                                  Icons.edit,
+                                ),
+                                SizedBox(
+                                  width: 8.0,
+                                ),
+                                Text(
+                                  'Edit Profile',
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         const SizedBox(
                           width: 8.0,
                         ),
-                        OutlinedButton(
-                          onPressed: () {
-                            navigateTo(context, EditProfilePage());
-                          },
-                          child: const Icon(
-                            Icons.edit,
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {
+                              AppCubit.get(context).signOut();
+                            },
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(
+                                  Icons.logout,
+                                ),
+                                SizedBox(
+                                  width: 8.0,
+                                ),
+                                Text(
+                                  'Log Out',
+                                ),
+                              ],
+                            ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ],

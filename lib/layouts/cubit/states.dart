@@ -105,7 +105,33 @@ class CreatePostErrorState extends AppStates {
 
 //-------------------------------------------------------------------------------
 //Get Posts
+class GetPostModelsLoadingState extends AppStates {}
 
+class GetPostModelsSuccessState extends AppStates {}
+
+class GetPostModelsErrorState extends AppStates {
+  GetPostModelsErrorState({required this.error});
+
+  final String error;
+}
+class GetPostLikesLoadingState extends AppStates {}
+
+class GetPostLikesSuccessState extends AppStates {}
+
+class GetPostLikesErrorState extends AppStates {
+  GetPostLikesErrorState({required this.error});
+
+  final String error;
+}
+class GetPostCommentsNumbersLoadingState extends AppStates {}
+
+class GetPostCommentsNumbersSuccessState extends AppStates {}
+
+class GetPostCommentsNumbersErrorState extends AppStates {
+  GetPostCommentsNumbersErrorState({required this.error});
+
+  final String error;
+}
 class AppGetPostsLoadingState extends AppStates {}
 
 class AppGetPostsSuccessState extends AppStates {}
@@ -215,6 +241,13 @@ class SendMessagesErrorState extends AppStates {
 
   final String error;
 }
+
+//-------------------------------------------------------------------------------
+//Sign Out
+
+class SignOutLoadingState extends AppStates {}
+
+class SignOutSuccessState extends AppStates {}
 
 //-------------------------------------------------------------------------------
 //
