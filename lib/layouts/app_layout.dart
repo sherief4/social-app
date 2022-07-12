@@ -5,7 +5,6 @@ import 'package:social_app/layouts/cubit/states.dart';
 import 'package:social_app/modules/new_post/new_post_screen.dart';
 import 'package:social_app/shared/constants.dart';
 import 'package:social_app/shared/icon_broken.dart';
-
 import 'cubit/cubit.dart';
 
 class AppLayout extends StatelessWidget {

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/layouts/cubit/cubit.dart';
 import 'package:social_app/layouts/cubit/states.dart';
 import 'package:social_app/models/user_model.dart';
-import 'package:social_app/modules/chats_details/chats_details_screen.dart';
+import 'package:social_app/modules/chats/chats_details_screen.dart';
 import 'package:social_app/shared/constants.dart';
 
 class ChatsScreen extends StatelessWidget {

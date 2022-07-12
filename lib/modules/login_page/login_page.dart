@@ -13,36 +13,38 @@ class LoginPage extends StatelessWidget {
   LoginPage({Key? key}) : super(key: key);
   final TextEditingController mailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final GlobalKey formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    return  BlocConsumer<LoginCubit, LoginPageStates>(
-        listener: (context, state) {
-          if (state is LoginErrorState) {
-            showToast(
-              state.error,
-              ToastState.error,
-            );
-          }
-          if (state is LoginSuccessState) {
-
-            CacheHelper.putData(key: 'uId', value: state.uId,).then((value){
-           AppCubit.get(context).getUserData().then((value) {
-             navigateAndFinish(context, AppLayout());
-           });
+    return BlocConsumer<LoginCubit, LoginPageStates>(
+      listener: (context, state) {
+        if (state is LoginErrorState) {
+          showToast(
+            state.error,
+            ToastState.error,
+          );
+        }
+        if (state is LoginSuccessState) {
+          CacheHelper.putData(
+            key: 'uId',
+            value: state.uId,
+          ).then((value) {
+            AppCubit.get(context).getUserData().then((value) {
+              navigateAndFinish(
+                context,
+                const AppLayout(),
+              );
             });
-          }
-        },
-        builder: (context, state) {
-          var cubit = LoginCubit.get(context);
-          return Scaffold(
-            backgroundColor: Colors.white,
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              elevation: 0.0,
-            ),
-            body: Center(
+          });
+        }
+      },
+      builder: (context, state) {
+        var cubit = LoginCubit.get(context);
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: Center(
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -73,16 +75,19 @@ class LoginPage extends StatelessWidget {
                           height: 32.0,
                         ),
                         CustomTextFormField(
-                            controller: mailController,
-                            obscure: false,
-                            keyboardType: TextInputType.emailAddress,
-                            validate: (String? value) {
-                              if (value!.isEmpty) {
-                                return "Email can\'t be empty";
-                              }
-                            },
-                            prefix: Icons.mail,
-                            label: "Email",),
+                          controller: mailController,
+                          obscure: false,
+                          keyboardType: TextInputType.emailAddress,
+                          validate: (String? value) {
+                            if (value!.isEmpty) {
+                              return "Please enter a valid email address";
+                            } else {
+                              return null;
+                            }
+                          },
+                          prefix: Icons.mail,
+                          label: "Email",
+                        ),
                         const SizedBox(
                           height: 16.0,
                         ),
@@ -92,7 +97,9 @@ class LoginPage extends StatelessWidget {
                           obscure: cubit.isPassword,
                           validate: (String? value) {
                             if (value!.isEmpty) {
-                              return "Password can\'t be empty";
+                              return "Please enter a valid password";
+                            } else {
+                              return null;
                             }
                           },
                           prefix: Icons.lock,
@@ -112,7 +119,12 @@ class LoginPage extends StatelessWidget {
                           height: 48.0,
                           child: MaterialButton(
                             onPressed: () {
-                              cubit.userLogin(email: mailController.text, password: passwordController.text);
+                              if (formKey.currentState!.validate()) {
+                                formKey.currentState!.save();
+                                cubit.userLogin(
+                                    email: mailController.text,
+                                    password: passwordController.text);
+                              }
                             },
                             color: mainColor,
                             child: state is LoginLoadingState
@@ -158,9 +170,9 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
             ),
-          );
-        },
-
+          ),
+        );
+      },
     );
   }
 }

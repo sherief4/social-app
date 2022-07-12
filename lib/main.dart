@@ -16,18 +16,20 @@ void main() async {
 
   await CacheHelper.init();
 
-  uId = await CacheHelper.getData('uId');
+  uId = CacheHelper.getData('uId');
 
-  Widget startWidget;
+  Widget startWidget = LoginPage();
 
   if (uId != null) {
-    startWidget = AppLayout();
+    startWidget = const AppLayout();
   } else {
     startWidget = LoginPage();
   }
-  runApp(MyApp(
-    startWidget: startWidget,
-  ));
+  runApp(
+    MyApp(
+      startWidget: startWidget,
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -39,46 +41,47 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (_) => LoginCubit(),
-          ),
-          BlocProvider(
-            create: (_) => AppCubit()
-              ..getUserData()
-              ..getPosts(),
-          ),
-          BlocProvider(
-            create: (_) => SignupCubit(),
-          ),
-        ],
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Social App',
-          theme: ThemeData(
-            primaryColor: mainColor,
-            scaffoldBackgroundColor: Colors.white,
-            fontFamily: 'Jannah',
-            primarySwatch: Colors.blueGrey,
-            bottomNavigationBarTheme: BottomNavigationBarThemeData(
-                selectedIconTheme: IconThemeData(
-                  color: secondColor,
-                ),
-                unselectedIconTheme: IconThemeData(
-                  color: mainColor,
-                ),
-                selectedLabelStyle: TextStyle(
-                  color: secondColor,
-                  fontWeight: FontWeight.bold,
-                ),
-                unselectedLabelStyle: TextStyle(
-                  color: mainColor,
-                  fontWeight: FontWeight.bold,
-                ),
-                selectedItemColor: secondColor,
-                unselectedItemColor: Colors.black),
-          ),
-          home: startWidget,
-        ));
+      providers: [
+        BlocProvider(
+          create: (_) => LoginCubit(),
+        ),
+        BlocProvider(
+          create: (_) => AppCubit()
+            ..getUserData()
+            ..getPosts(),
+        ),
+        BlocProvider(
+          create: (_) => SignupCubit(),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Social App',
+        theme: ThemeData(
+          primaryColor: mainColor,
+          scaffoldBackgroundColor: Colors.white,
+          fontFamily: 'Jannah',
+          primarySwatch: Colors.blueGrey,
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+              selectedIconTheme: IconThemeData(
+                color: secondColor,
+              ),
+              unselectedIconTheme: IconThemeData(
+                color: mainColor,
+              ),
+              selectedLabelStyle: TextStyle(
+                color: secondColor,
+                fontWeight: FontWeight.bold,
+              ),
+              unselectedLabelStyle: TextStyle(
+                color: mainColor,
+                fontWeight: FontWeight.bold,
+              ),
+              selectedItemColor: secondColor,
+              unselectedItemColor: Colors.black),
+        ),
+        home: startWidget,
+      ),
+    );
   }
 }
